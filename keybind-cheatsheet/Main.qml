@@ -1214,7 +1214,11 @@ Item {
       var ch = str[i];
       if (ch === "'" && !inDouble) { inSingle = !inSingle; continue; }
       if (ch === '"' && !inSingle) { inDouble = !inDouble; continue; }
-      if (ch === '#' && !inSingle && !inDouble) return i;
+      if (ch === '#' && !inSingle && !inDouble) {
+        // Per-bind description suffix: #"description" — not a comment
+        if (str.charAt(i + 1) === '"') continue;
+        return i;
+      }
     }
     return -1;
   }
@@ -1222,19 +1226,29 @@ Item {
   function parseMangoConfig(text) {
     var lines = text.split('\n');
     var currentCategory = null;
+    var defaultCat = pluginApi?.tr("default-category");
 
     for (var i = 0; i < lines.length; i++) {
       var rawLine = lines[i];
       var commentPos = findMangoUnquotedComment(rawLine);
       var effectiveLine = commentPos >= 0 ? rawLine.substring(0, commentPos).trim() : rawLine.trim();
 
-      if (effectiveLine.length === 0) continue;
-
-      // Category detection: # Title (but only when not a bind line)
-      var categoryCandidate = extractMangoCategory(rawLine);
-      if (categoryCandidate !== null) {
-        currentCategory = categoryCandidate;
+      // Pure-comment lines: only candidate for category detection (# Title)
+      if (effectiveLine.length === 0) {
+        var categoryCandidate = extractMangoCategory(rawLine);
+        if (categoryCandidate !== null) {
+          currentCategory = categoryCandidate;
+        }
         continue;
+      }
+
+      // Extract optional per-bind description: trailing #"description"
+      var perBindDesc = null;
+      var descMatch = effectiveLine.match(/#"([^"]*)"\s*$/);
+      if (descMatch) {
+        perBindDesc = descMatch[1];
+        effectiveLine = effectiveLine.substring(0, descMatch.index).trim();
+        if (effectiveLine.length === 0) continue;
       }
 
       // bind=MODS,KEY,ACTION,ARGS
@@ -1246,9 +1260,9 @@ Item {
           var key = parts[1].trim();
           var action = parts[2].trim();
           var args = parts.length >= 4 ? parts.slice(3).join(',').trim() : "";
-          var cat = currentCategory || "General";
+          var cat = currentCategory || defaultCat;
           var formattedKeys = formatMangoKeyCombo(modStr, key, "bind");
-          var description = formatMangoAction(action, args);
+          var description = perBindDesc || formatMangoAction(action, args);
 
           if (!collectedBinds[cat]) collectedBinds[cat] = [];
           collectedBinds[cat].push({ "keys": formattedKeys, "desc": description });
@@ -1265,10 +1279,10 @@ Item {
           var axis = axisParts[1].trim().toUpperCase();
           var aAction = axisParts[2].trim();
           var aArgs = axisParts.length >= 4 ? axisParts.slice(3).join(',').trim() : "";
-          var aCat = currentCategory || "General";
+          var aCat = currentCategory || defaultCat;
           var aKey = mangoAxisMap[axis] || axis;
           var aCombo = formatMangoKeyCombo(aModStr, aKey, "axis");
-          var aDesc = formatMangoAction(aAction, aArgs);
+          var aDesc = perBindDesc || formatMangoAction(aAction, aArgs);
 
           if (!collectedBinds[aCat]) collectedBinds[aCat] = [];
           collectedBinds[aCat].push({ "keys": aCombo, "desc": aDesc });
@@ -1285,10 +1299,10 @@ Item {
           var btn = mouseParts[1].trim().toUpperCase();
           var mAction = mouseParts[2].trim();
           var mArgs = mouseParts.length >= 4 ? mouseParts.slice(3).join(',').trim() : "";
-          var mCat = currentCategory || "Mouse";
+          var mCat = currentCategory || defaultCat;
           var mKey = mangoButtonMap[btn] || btn;
           var mCombo = formatMangoKeyCombo(mModStr, mKey, "mouse");
-          var mDesc = formatMangoAction(mAction, mArgs);
+          var mDesc = perBindDesc || formatMangoAction(mAction, mArgs);
 
           if (!collectedBinds[mCat]) collectedBinds[mCat] = [];
           collectedBinds[mCat].push({ "keys": mCombo, "desc": mDesc });
@@ -1300,24 +1314,56 @@ Item {
   function extractMangoCategory(line) {
     var trimmed = line.trim();
     // A category line is a standalone comment: # Category Name
-    // Must not look like a bind= line
     if (!trimmed.startsWith('#')) return null;
-    // Strip the leading #
-    var rest = trimmed.substring(1).trim();
+    // Strip leading hashes (#, ##, ###, ...)
+    var rest = trimmed.replace(/^#+/, '').trim();
     if (rest.length === 0) return null;
+
+    // Length cap — categories shouldn't be paragraphs ("# TODO fix later" etc.)
+    if (rest.length > 100) return null;
+
+    // Pure horizontal rule (only decorative chars): ────, ====, ----, ****
+    if (/^[─━═=\-_*#/\\\s]+$/.test(rest)) return null;
+
+    // Reject paren/bracket continuation: "(continued)", "(see above)", "[note]"
+    if (/^[\(\[]/.test(rest)) return null;
+
+    // Reject flow arrows: "→ next step", "->", "=>"
+    if (/^[→←↑↓⇒⇐➜➔►▶]/.test(rest)) return null;
+    if (rest.indexOf('->') === 0 || rest.indexOf('=>') === 0) return null;
+
+    // Reject keyword-prefixed notes: "# TODO ...", "# FIXME ...", "# NOTE ..."
+    if (/^(TODO|FIXME|NOTE|HACK|XXX|BUG|WIP)\b/i.test(rest)) return null;
+
+    // Strip trailing horizontal-rule decoration: "Category ────" -> "Category"
+    rest = rest.replace(/[─━═=\-_*]{3,}\s*$/, '').trim();
+    if (rest.length === 0) return null;
+
+    // Numbered list extraction: "1. Foo" -> "Foo"
+    var numbered = rest.match(/^\d+\.\s*(.+)$/);
+    if (numbered) return numbered[1].trim();
+
     return rest;
   }
 
   function formatMangoKeyCombo(modStr, key, kind) {
     var mods = [];
     var modUpper = modStr.toUpperCase();
-    if (modUpper.indexOf("SUPER") !== -1) mods.push("Super");
+    // SUPER aliases: SUPER, LOGO
+    if (modUpper.indexOf("SUPER") !== -1 || modUpper.indexOf("LOGO") !== -1) mods.push("Super");
     if (modUpper.indexOf("SHIFT") !== -1) mods.push("Shift");
     if (modUpper.indexOf("CTRL") !== -1 || modUpper.indexOf("CONTROL") !== -1) mods.push("Ctrl");
-    if (modUpper.indexOf("ALT") !== -1) mods.push("Alt");
+    // ALT aliases: ALT, MOD1
+    if (modUpper.indexOf("ALT") !== -1 || modUpper.indexOf("MOD1") !== -1) mods.push("Alt");
 
-    // Map the key name if we have it
-    var mappedKey = (kind === "bind") ? (mangoKeyNameMap[key] || key) : key;
+    // Map the key name. For bind keys, prefer XF86 special-key formatting (Vol Up, Mute, ...).
+    var mappedKey;
+    if (kind === "bind") {
+      var specialMapped = formatSpecialKey(key);
+      mappedKey = (specialMapped !== key) ? specialMapped : (mangoKeyNameMap[key] || key);
+    } else {
+      mappedKey = key;
+    }
 
     if (mods.length > 0) {
       return mods.join(" + ") + " + " + mappedKey;

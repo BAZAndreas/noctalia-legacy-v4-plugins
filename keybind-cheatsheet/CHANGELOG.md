@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.6.1] - 2026-04-26
+
+### MangoWC Parser Regression Fixes
+
+Addresses review feedback on PR #725 from @countgitmick.
+
+- **XF86 media keys now formatted:** `formatMangoKeyCombo` calls `formatSpecialKey`, so `XF86AudioRaiseVolume` renders as "Vol Up", `XF86AudioMute` as "Mute", brightness keys as "Bright Up/Down", etc.
+- **Stray `#` comments no longer become categories:** `extractMangoCategory` restored filters — length cap of 100 chars, horizontal-rule strip (`────`, `====`, `----`), numbered-list extraction (`1. Foo` → `Foo`), paren/bracket continuation reject, flow-arrow reject (`→`, `->`, `=>`), keyword-prefixed notes reject (TODO/FIXME/NOTE/HACK/XXX/BUG/WIP).
+- **Per-bind `#"description"` suffix preserved:** `findMangoUnquotedComment` skips past `#"`, and `parseMangoConfig` extracts the trailing quoted description so `bind=SUPER,T,exec,foo #"Open terminal"` keeps "Open terminal" as the rendered description.
+- **Modifier aliases:** `LOGO` (= SUPER) and `MOD1` (= ALT) are now recognized as valid Mango modifier tokens.
+- **Default category localized:** the fallback category for `bind=`/`axisbind=`/`mousebind=` lines without a preceding `# Category` now uses `pluginApi.tr("default-category")` instead of hardcoded "General"/"Mouse".
+- **Category detection actually runs now:** moved category extraction into the pure-comment branch so `# Title` lines actually update `currentCategory` (previously dead code path).
+
+---
+
 ## [3.5.0] - 2026-04-21
 
 ### New Features
