@@ -516,7 +516,7 @@ Item {
           id: commandText
           anchors.fill: parent
           anchors.margins: Style.marginS
-          text: "qs -c \"noctalia-shell\" ipc call plugin:keybind-cheatsheet toggle"
+          text: rootItem.pluginApi?.tr("settings.keybind-command")
           font.family: "monospace"
           pointSize: Style.fontSizeS
           color: Color.mPrimary
