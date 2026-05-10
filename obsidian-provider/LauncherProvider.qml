@@ -29,14 +29,14 @@ Item {
         id: configFile
         onTextChanged: root.parseConfig()
         onLoadFailed: (err) => {
-            Logger.e("ObsidianQuickview", "Failed to load config:", err);
+            Logger.e("ObsidianProvider", "Failed to load config:", err);
             root.loading = false;
             root.loaded = false;
         }
     }
 
     function init() {
-        Logger.i("ObsidianQuickview", "init, pluginDir:", pluginApi?.pluginDir);
+        Logger.i("ObsidianProvider", "init, pluginDir:", pluginApi?.pluginDir);
         handleSearch = cfg.includeInSearch ?? defaults.includeInSearch;
         let p = cfg.obsidianConfigPath ?? defaults.obsidianConfigPath;
         configPath = p.replace(/~/g, Quickshell.env("HOME"));
@@ -69,12 +69,12 @@ Item {
             root.database = entries;
             loaded = true;
             loading = false;
-            Logger.i("ObsidianQuickview", "Loaded", entries.length, "vaults");
+            Logger.i("ObsidianProvider", "Loaded", entries.length, "vaults");
             if (launcher && launcher.activeProvider == root) {
                 launcher.updateResults();
             }
         } catch (e) {
-            Logger.e("ObsidianQuickview", "Parse error:", e);
+            Logger.e("ObsidianProvider", "Parse error:", e);
             loading = false;
             loaded = false;
         }
@@ -161,7 +161,7 @@ Item {
 
     function activateEntry(entry) {
         const uri = "obsidian://open?vault=" + encodeURIComponent(entry.displayName);
-        Logger.i("ObsidianQuickview", "Opening vault:", uri);
+        Logger.i("ObsidianProvider", "Opening vault:", uri);
         Quickshell.execDetached(["xdg-open", uri]);
     }
 }

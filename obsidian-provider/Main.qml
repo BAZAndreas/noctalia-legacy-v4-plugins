@@ -5,7 +5,7 @@ Item {
   property var pluginApi: null
 
   IpcHandler {
-    target: "plugin:obsidian-quickview"
+    target: "plugin:obsidian-provider"
     function toggle() {
       pluginApi.withCurrentScreen(screen => {
         pluginApi.toggleLauncher(screen);
