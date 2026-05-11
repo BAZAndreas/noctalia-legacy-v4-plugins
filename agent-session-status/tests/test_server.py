@@ -69,6 +69,8 @@ class McpRequestTest(unittest.TestCase):
         self.assertEqual(body["jsonrpc"], "2.0")
         self.assertEqual(body["id"], 1)
         self.assertIn("tools", body["result"]["capabilities"])
+        self.assertIn("prompts", body["result"]["capabilities"])
+        self.assertIn("report_session", body["result"]["instructions"])
 
     def test_tools_list_exposes_session_tools(self):
         status, _, body = self.request({
@@ -80,6 +82,31 @@ class McpRequestTest(unittest.TestCase):
         self.assertEqual(status, 200)
         names = [tool["name"] for tool in body["result"]["tools"]]
         self.assertEqual(names, ["report_session", "list_sessions"])
+        self.assertIn("task start", body["result"]["tools"][0]["description"])
+
+    def test_prompts_expose_usage_instructions(self):
+        status, _, body = self.request({
+            "jsonrpc": "2.0",
+            "id": 7,
+            "method": "prompts/list",
+        })
+
+        self.assertEqual(status, 200)
+        self.assertEqual(body["result"]["prompts"][0]["name"], "agent-session-reporting")
+
+        status, _, body = self.request({
+            "jsonrpc": "2.0",
+            "id": 8,
+            "method": "prompts/get",
+            "params": {
+                "name": "agent-session-reporting",
+            },
+        })
+
+        self.assertEqual(status, 200)
+        text = body["result"]["messages"][0]["content"]["text"]
+        self.assertIn("X-Agent", text)
+        self.assertIn("completed", text)
 
     def test_report_session_requires_authorization(self):
         status, _, body = self.request({

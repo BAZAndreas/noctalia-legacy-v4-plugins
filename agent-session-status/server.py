@@ -9,6 +9,16 @@ from urllib.parse import urlparse
 
 VALID_STATUSES = {"running", "completed", "blocked"}
 PROTOCOL_VERSION = "2025-06-18"
+USAGE_INSTRUCTIONS = """Use this MCP server to publish your current agent session state to the Noctalia bar and panel.
+
+Call report_session when you start work, when your state changes, and before you finish. Use the same id for the same task so later calls update the existing in-memory session instead of creating duplicates.
+
+Use status values this way:
+- running: you are actively working or waiting on a command that is part of the task.
+- blocked: you need user input, approval, or an external dependency before you can continue.
+- completed: the task is finished or you are no longer actively working on it.
+
+The MCP client must send Authorization: Bearer <token> and X-Agent: <agent-name> headers. X-Agent is the display group name in the Noctalia panel, for example codex or claude."""
 
 
 class ValidationError(Exception):
@@ -113,26 +123,37 @@ def _text_tool_result(payload):
     }
 
 
+def _session_prompts():
+    return [
+        {
+            "name": "agent-session-reporting",
+            "title": "Agent session reporting guide",
+            "description": "Instructions for agents that report status to the Noctalia session panel.",
+        },
+    ]
+
+
 def _session_tools():
     return [
         {
             "name": "report_session",
             "title": "Report agent session status",
-            "description": "Create or update an in-memory session for the calling agent. Requires X-Agent and bearer token headers.",
+            "description": "Create or update your visible Noctalia session. Call it at task start with running, when blocked with blocked, and at task end with completed. Reuse the same id for the same task. Requires Authorization bearer token and X-Agent headers.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "Stable session id for this agent.",
+                        "description": "Stable id for this task/session. Reuse it for updates.",
                     },
                     "title": {
                         "type": "string",
-                        "description": "Human-readable session title.",
+                        "description": "Short human-readable task title shown in the Noctalia panel.",
                     },
                     "status": {
                         "type": "string",
                         "enum": ["running", "completed", "blocked"],
+                        "description": "running while active, blocked when waiting for user/external input, completed when finished.",
                     },
                 },
                 "required": ["id", "title", "status"],
@@ -142,7 +163,7 @@ def _session_tools():
         {
             "name": "list_sessions",
             "title": "List reported agent sessions",
-            "description": "Return the current in-memory session snapshot grouped by agent.",
+            "description": "Return the current in-memory session snapshot grouped by X-Agent.",
             "inputSchema": {
                 "type": "object",
                 "properties": {},
@@ -172,12 +193,35 @@ def _handle_mcp(store, token, headers, raw_body):
         return _rpc_result(request_id, {
             "protocolVersion": PROTOCOL_VERSION,
             "capabilities": {
+                "prompts": {},
                 "tools": {},
             },
             "serverInfo": {
                 "name": "agent-session-status",
                 "version": "1.0.0",
             },
+            "instructions": USAGE_INSTRUCTIONS,
+        })
+
+    if method == "prompts/list":
+        return _rpc_result(request_id, {"prompts": _session_prompts()})
+
+    if method == "prompts/get":
+        name = params.get("name")
+        if name != "agent-session-reporting":
+            return _rpc_error(request_id, -32602, "Unknown prompt: " + str(name))
+
+        return _rpc_result(request_id, {
+            "description": "Instructions for reporting agent session status to Noctalia.",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": {
+                        "type": "text",
+                        "text": USAGE_INSTRUCTIONS,
+                    },
+                },
+            ],
         })
 
     if method == "tools/list":
