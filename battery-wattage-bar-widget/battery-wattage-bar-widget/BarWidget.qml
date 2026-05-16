@@ -151,14 +151,8 @@ Item {
         width: root.contentWidth
         height: root.contentHeight
         radius: (typeof Style !== "undefined") ? Style.radiusL : 6
-        
-        color: mouseArea.containsMouse 
-            ? ((typeof Color !== "undefined") ? Color.mHover : "#33ffffff")
-            : ((root.batStatus === "Charging")
-                ? ((typeof Color !== "undefined") ? Color.mPrimary : "#3355ff")
-                : ((typeof Style !== "undefined") ? Style.capsuleColor : "#1affffff"))
-
-        border.color: (root.batStatus === "Charging") ? ((typeof Color !== "undefined") ? Color.mPrimary : "#3355ff") : ((typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff")
+        color: mouseArea.containsMouse ? ((typeof Color !== "undefined") ? Color.mHover : "#33ffffff") : ((typeof Style !== "undefined") ? Style.capsuleColor : "#1affffff")
+        border.color: (root.batStatus === "Charging" || root.batStatus === "Full") ? ((typeof Color !== "undefined") ? Color.mPrimary : "#00ff00") : ((typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff")
         border.width: (typeof Style !== "undefined") ? Style.capsuleBorderWidth : 1
 
         RowLayout {
@@ -168,9 +162,7 @@ Item {
 
             NIcon {
                 icon: (root.batStatus === "Charging" || root.batStatus === "Full") ? "battery-charging" : "battery-4"
-                color: (typeof Color !== "undefined") 
-                    ? (mouseArea.containsMouse || root.batStatus === "Charging" ? Color.mOnPrimary : Color.mOnSurface)
-                    : "#ffffff"
+                color: (root.batStatus === "Charging") ? ((typeof Color !== "undefined") ? Color.mPrimary : "#00ff00") : (root.wattNum > 22.0 ? "#ff5555" : ((typeof Color !== "undefined") ? Color.mOnSurface : "#ffffff"))
             }
 
             NText {
@@ -178,9 +170,7 @@ Item {
                 pointSize: barFontSize
                 font.family: root.fixedFont
                 font.weight: Font.Bold
-                color: (typeof Color !== "undefined")
-                    ? (mouseArea.containsMouse || root.batStatus === "Charging" ? Color.mOnPrimary : Color.mOnSurface)
-                    : "#ffffff"
+                color: (root.batStatus === "Charging") ? ((typeof Color !== "undefined") ? Color.mPrimary : "#00ff00") : (root.wattNum > 22.0 ? "#ff5555" : ((typeof Color !== "undefined") ? Color.mOnSurface : "#ffffff"))
             }
         }
     }
