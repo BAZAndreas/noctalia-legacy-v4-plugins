@@ -31,6 +31,13 @@ Item {
     implicitWidth: contentWidth
     implicitHeight: (typeof Style !== "undefined") ? Style.barHeight : 32
 
+    // Registra questa istanza nel pluginApi per renderla accessibile al Popup
+    Component.onCompleted: {
+        if (pluginApi) {
+            pluginApi.mainInstance = root;
+        }
+    }
+
     Timer {
         interval: 2000
         running: true

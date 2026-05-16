@@ -1,61 +1,105 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import qs.Commons
 import qs.Widgets
 
-Rectangle {
-    id: popupRoot
-    implicitWidth: 240
-    implicitHeight: 160
-    color: (typeof Color !== "undefined") ? Color.mSurface : "#1e1e2e"
-    radius: (typeof Style !== "undefined") ? Style.radiusL : 6
-    border.color: (typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff"
-    border.width: 1
+Item {
+    id: root
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: (typeof Style !== "undefined") ? Style.marginM : 8
-        spacing: (typeof Style !== "undefined") ? Style.marginM : 8
+    property var pluginApi: null
+    property var screen: null
+    
+    readonly property var mainWidget: pluginApi?.mainInstance || null
 
-        NText {
-            text: "Battery Details"
-            font.weight: Font.Bold
-            pointSize: (typeof Style !== "undefined") ? Style.fontSizeM : 12
-            Layout.alignment: Qt.AlignHCenter
-        }
+    // Aumentato il moltiplicatore (da *4 a *6) per dare più spazio complessivo alla finestra
+    property real contentPreferredWidth: (panelContent.implicitWidth + Style.marginM * 6) * Style.uiScaleRatio
+    property real contentPreferredHeight: (panelContent.implicitHeight + Style.marginM * 6) * Style.uiScaleRatio
+    
+    readonly property var geometryPlaceholder: visualCapsule
+    readonly property bool allowAttach: true
 
-        ProgressBar {
-            Layout.fillWidth: true
-            value: (typeof root !== "undefined") ? root.batPercent / 100 : 0
-            background: Rectangle { 
-                implicitHeight: 6
-                color: (typeof Color !== "undefined") ? Color.alpha(Color.mOnSurface, 0.1) : "#11ffffff"
-                radius: 3 
-            }
-            contentItem: Item {
-                Rectangle {
-                    width: parent.width * ((typeof root !== "undefined") ? (root.batPercent / 100) : 0)
-                    height: parent.height
-                    radius: 3
-                    color: (typeof Color !== "undefined") ? Color.mPrimary : "#00ff00"
+    anchors.fill: parent
+
+    Rectangle {
+        id: visualCapsule
+        
+        anchors.centerIn: parent
+        width: parent.width - (Style.marginM * 2)
+        height: parent.height - (Style.marginM * 2)
+        
+        color: (typeof Color !== "undefined") ? Color.mSurface : "#1e1e2e"
+        radius: (typeof Style !== "undefined") ? Style.radiusL : 6
+        border.color: (typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff"
+        border.width: 1
+
+        RowLayout {
+            id: panelContent
+            anchors.centerIn: parent
+            
+            // Aggiunti i margini espliciti qui dentro per spingere i controlli verso il centro
+            anchors.margins: (typeof Style !== "undefined") ? Style.marginL : 16
+            
+            // Aumentato lo spazio orizzontale tra il blocco di sinistra e quello di destra
+            spacing: 16
+
+            // Lato Sinistro: Icona Grande e Percentuale
+            ColumnLayout {
+                spacing: 4 // Leggermente aumentato lo spazio verticale tra icona e %
+                Layout.alignment: Qt.AlignVCenter
+                Layout.fillWidth: false
+
+                NIcon {
+                    icon: (root.mainWidget && (root.mainWidget.batStatus === "Charging" || root.mainWidget.batStatus === "Full")) ? "battery-charging" : "battery-4"
+                    pointSize: 20
+                    color: (typeof Color !== "undefined") ? Color.mPrimary : "#3355ff"
+                    Layout.alignment: Qt.AlignHCenter
+                }
+
+                NText {
+                    text: root.mainWidget ? root.mainWidget.batPercent + "%" : "0%"
+                    font.weight: Font.Bold
+                    pointSize: (typeof Style !== "undefined") ? Style.fontSizeM : 11
+                    Layout.alignment: Qt.AlignHCenter
+                    horizontalAlignment: Text.AlignHCenter
                 }
             }
-        }
 
-        GridLayout {
-            columns: 2
-            Layout.fillWidth: true
-            rowSpacing: 4
-            
-            NText { text: "Power:"; color: (typeof Color !== "undefined") ? Color.mOnSurfaceVariant : "#a6adc8" }
-            NText { text: ((typeof root !== "undefined") ? root.wattNum.toFixed(2) : "0.00") + " W"; Layout.alignment: Qt.AlignRight }
-            
-            NText { text: "Status:"; color: (typeof Color !== "undefined") ? Color.mOnSurfaceVariant : "#a6adc8" }
-            NText { text: (typeof root !== "undefined") ? root.batStatus : "Unknown"; Layout.alignment: Qt.AlignRight }
-            
-            NText { text: "Time:"; color: (typeof Color !== "undefined") ? Color.mOnSurfaceVariant : "#a6adc8" }
-            NText { text: (typeof root !== "undefined") ? root.timeRemaining : "..."; Layout.alignment: Qt.AlignRight }
+            // Divisore verticale
+            Rectangle {
+                Layout.fillHeight: true
+                width: 1
+                color: (typeof Color !== "undefined") ? Color.mOutline : "#33ffffff"
+                opacity: 0.15
+            }
+
+            // Lato Destro: Stato principale e info temporale/watt dinamica
+            ColumnLayout {
+                spacing: 4 // Leggermente aumentato lo spazio verticale tra lo stato e i dettagli
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+
+                NText {
+                    text: root.mainWidget ? root.mainWidget.batStatus : "Unknown"
+                    font.weight: Font.Bold
+                    pointSize: (typeof Style !== "undefined") ? Style.fontSizeS : 10
+                    color: (typeof Color !== "undefined") ? Color.mOnSurface : "#ffffff"
+                }
+
+                NText {
+                    text: {
+                        if (!root.mainWidget) return "...";
+                        if (root.mainWidget.batStatus === "Charging") {
+                            return "Time to full: " + root.mainWidget.timeRemaining;
+                        } else if (root.mainWidget.batStatus === "Discharging") {
+                            return "Remaining: " + root.mainWidget.timeRemaining;
+                        } else {
+                            return root.mainWidget.wattNum.toFixed(1) + " W";
+                        }
+                    }
+                    pointSize: (typeof Style !== "undefined") ? Style.fontSizeXS : 9
+                    color: (typeof Color !== "undefined") ? Color.mOnSurfaceVariant : "#a6adc8"
+                }
+            }
         }
     }
 }
