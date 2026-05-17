@@ -13,6 +13,7 @@ ColumnLayout {
 
   // Local state - track changes before saving
   property bool valueAutoLaunchSteam: cfg.autoLaunchSteam ?? defaults.autoLaunchSteam ?? true
+  property bool valueUseCustomLayout: cfg.useCustomLayout ?? defaults.useCustomLayout ?? false
   property bool valueEnableChatNotifications: cfg.enableChatNotifications ?? defaults.enableChatNotifications ?? true
   property int valueFriendsWidth: cfg.friendsWidthPercent ?? defaults.friendsWidthPercent ?? 10
   property int valueMainWidth: cfg.mainWidthPercent ?? defaults.mainWidthPercent ?? 60
@@ -48,6 +49,15 @@ ColumnLayout {
     description: "Show notification indicator on bar icon when new Steam chat messages arrive"
     checked: root.valueEnableChatNotifications
     onToggled: root.valueEnableChatNotifications = checked
+  }
+
+  // Custom Hyprland layout toggle
+  NCheckbox {
+    Layout.fillWidth: true
+    label: "Use custom Hyprland layout (Lua)"
+    description: "Let a Hyprland custom Lua layout tile the windows instead of floating+positioning them. Requires Hyprland 0.55+ Lua config and steam-layout.lua (see README). When enabled, the width sliders below are handled by the Lua layout."
+    checked: root.valueUseCustomLayout
+    onToggled: root.valueUseCustomLayout = checked
   }
 
   NDivider {
@@ -213,6 +223,7 @@ ColumnLayout {
 
     // Update the plugin settings object
     pluginApi.pluginSettings.autoLaunchSteam = root.valueAutoLaunchSteam;
+    pluginApi.pluginSettings.useCustomLayout = root.valueUseCustomLayout;
     pluginApi.pluginSettings.enableChatNotifications = root.valueEnableChatNotifications;
     pluginApi.pluginSettings.friendsWidthPercent = root.valueFriendsWidth;
     pluginApi.pluginSettings.mainWidthPercent = root.valueMainWidth;
