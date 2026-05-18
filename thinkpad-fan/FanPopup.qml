@@ -24,7 +24,7 @@ Item {
         anchors.centerIn: parent
         spacing: Style.marginM
 
-        // --- GRID CONTROL OVERRIDES ---
+        // ===== Grid controls override =====
         Rectangle {
             id: controlCapsule
             Layout.preferredWidth: root.contentPreferredWidth - (Style.marginM * 2)
@@ -40,7 +40,7 @@ Item {
                 spacing: Style.marginS
 
                 NText {
-                    text: "Fan Speed Manual Override"
+                    text: "Fan speed manual override"
                     font.weight: Font.Bold
                     pointSize: (typeof Style !== "undefined") ? Style.fontSizeS : 10
                     color: (typeof Color !== "undefined") ? Color.mOnSurface : "#ffffff"
@@ -54,9 +54,9 @@ Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    // Core automatic & extreme modes
+                    // Automatic & disengaged
                     SelectorButton { text: "Auto"; level: "auto"; Layout.columnSpan: 2; Layout.fillWidth: true }
-                    SelectorButton { text: "Full Out"; level: "disengaged"; Layout.columnSpan: 2; Layout.fillWidth: true }
+                    SelectorButton { text: "Full out"; level: "disengaged"; Layout.columnSpan: 2; Layout.fillWidth: true }
 
                     // Numeric steps
                     SelectorButton { text: "0"; level: "0" }

@@ -24,11 +24,18 @@ Item {
     property int fanRpm: 0
     property string fanLevel: "auto"
     property int currentTemp: 0
-
-    // Flag per accertarsi che sia stata fatta almeno la prima lettura hardware
     property bool isInitialized: false
 
-    // Accurate layout width calculations wrapping strictly the fan elements
+    readonly property bool colorizeByStatus:
+        pluginApi?.pluginSettings?.colorizeByStatus ??
+        pluginApi?.manifest?.metadata?.defaultSettings?.colorizeByStatus ??
+        true
+
+    readonly property bool allowPopupOpening:
+        pluginApi?.pluginSettings?.allowPopupOpening ??
+        pluginApi?.manifest?.metadata?.defaultSettings?.allowPopupOpening ??
+        true
+
     readonly property real contentWidth: layout.implicitWidth + ((typeof Style !== "undefined") ? Style.marginS * 2 : 8)
     readonly property real contentHeight: capsuleHeight
     implicitWidth: contentWidth
@@ -42,7 +49,7 @@ Item {
         tempLoader.reload();
     }
 
-    // Fan status monitoring
+    // Reading fan state
     QSIo.FileView {
         id: fanLoader
         path: "/proc/acpi/ibm/fan"
@@ -65,15 +72,13 @@ Item {
                 }
 
                 root.fanRpm = parsedRpm;
-                
-                // Seguiamo sempre passivamente il valore hardware reale deciso da thinkfan
                 root.fanLevel = parsedLevel;
                 root.isInitialized = true;
             }
         }
     }
 
-    // Background temperature tracker (logico)
+    // Reading temperature
     QSIo.FileView {
         id: tempLoader
         path: "/sys/class/thermal/thermal_zone0/temp"
@@ -89,17 +94,15 @@ Item {
         }
     }
 
-    // Safe inline process execution engine
     function setFanSpeed(targetLevel) {
         if (!root.isInitialized) return;
 
         let cleanLevel = String(targetLevel).replace(/[\r\n\t]/g, "").trim().toLowerCase();
         if (!cleanLevel || cleanLevel === "unknown") return;
         
-        // Aggiorna subito la UI locale in attesa che il comando venga applicato
         root.fanLevel = cleanLevel;
         try {
-            let rawQml = "import Quickshell.Io; Process { command: ['sh', '-c', 'echo level " + cleanLevel + " > /proc/acpi/ibm/fan']; running: true }";
+            let rawQml = 'import Quickshell.Io; Process { command: ["sh", "-c", "echo level ' + cleanLevel + ' > /proc/acpi/ibm/fan"]; running: true }';
             let proc = Qt.createQmlObject(rawQml, root, "DynamicFanInlineProc");
             
             if (proc) {
@@ -113,29 +116,36 @@ Item {
         }
     }
 
-    Timer {
-        id: refreshTimer
-        interval: 300
-        repeat: false
-        onTriggered: {
-            fanLoader.reload();
-            tempLoader.reload();
-        }
-    }
-
-    Timer {
-        interval: 2000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            fanLoader.reload();
-            tempLoader.reload();
-        }
-    }
+    Timer { id: refreshTimer; interval: 300; repeat: false; onTriggered: { fanLoader.reload(); tempLoader.reload(); } }
+    Timer { interval: 2000; running: true; repeat: true; triggeredOnStart: true; onTriggered: { fanLoader.reload(); tempLoader.reload(); } }
 
     readonly property bool isCustomActive: root.fanLevel !== "auto" && root.fanLevel !== "0"
 
+    // ===== Context menu =====
+    NPopupContextMenu {
+        id: contextMenu
+
+        model: [
+            {
+                "label": "Widget settings",
+                "action": "settings",
+                "icon": "settings"
+            }
+        ]
+
+        onTriggered: action => {
+            contextMenu.close()
+            PanelService.closeContextMenu(screen)
+
+            if (action === "settings") {
+                if (pluginApi?.manifest) {
+                    BarService.openPluginSettings(screen, pluginApi.manifest)
+                }
+            }
+        }
+    }
+
+    // ===== Appearance =====
     Rectangle {
         id: visualCapsule
         anchors.centerIn: parent
@@ -143,17 +153,17 @@ Item {
         height: root.contentHeight
         radius: (typeof Style !== "undefined") ? Style.radiusL : 6
         
-        color: root.isCustomActive
-            ? ((typeof Color !== "undefined") ? Color.mPrimary : "#3355ff")
-            : (root.fanLevel === "0"
-                ? "#cc241d"
-                : ((typeof Style !== "undefined") ? Style.capsuleColor : "#1affffff"))
+        color: !root.colorizeByStatus
+            ? ((typeof Style !== "undefined") ? Style.capsuleColor : "#1affffff")
+            : (root.isCustomActive
+                ? ((typeof Color !== "undefined") ? Color.mPrimary : "#3355ff")
+                : (root.fanLevel === "0" ? "#cc241d" : ((typeof Style !== "undefined") ? Style.capsuleColor : "#1affffff")))
 
-        border.color: root.isCustomActive
-            ? ((typeof Color !== "undefined") ? Color.mPrimary : "#3355ff")
-            : (root.fanLevel === "0"
-                ? "#cc241d"
-                : ((typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff"))
+        border.color: !root.colorizeByStatus
+            ? ((typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff")
+            : (root.isCustomActive
+                ? ((typeof Color !== "undefined") ? Color.mPrimary : "#3355ff")
+                : (root.fanLevel === "0" ? "#cc241d" : ((typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff")))
         border.width: (typeof Style !== "undefined") ? Style.capsuleBorderWidth : 1
 
         RowLayout {
@@ -165,7 +175,7 @@ Item {
                 id: fanIcon
                 icon: "car-fan"
                 color: (typeof Color !== "undefined")
-                    ? (root.isCustomActive || root.fanLevel === "0" ? Color.mOnPrimary : Color.mOnSurface)
+                    ? (root.colorizeByStatus && (root.isCustomActive || root.fanLevel === "0") ? Color.mOnPrimary : Color.mOnSurface)
                     : "#ffffff"
             }
 
@@ -176,20 +186,28 @@ Item {
                 font.family: root.fixedFont
                 font.weight: Font.Bold
                 color: (typeof Color !== "undefined")
-                    ? (root.isCustomActive || root.fanLevel === "0" ? Color.mOnPrimary : Color.mOnSurface)
+                    ? (root.colorizeByStatus && (root.isCustomActive || root.fanLevel === "0") ? Color.mOnPrimary : Color.mOnSurface)
                     : "#ffffff"
             }
         }
     }
 
+    // ===== Mouse interactions =====
     MouseArea {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            if (pluginApi && typeof pluginApi.openPanel === "function") {
-                pluginApi.openPanel(root.screen, root)
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        
+        onClicked: (mouse) => {
+            if (mouse.button === Qt.RightButton) {
+                // Sfrutta il PanelService nativo per posizionare il menu
+                PanelService.showContextMenu(contextMenu, root, screen)
+            } else if (mouse.button === Qt.LeftButton) {
+                if (root.allowPopupOpening && pluginApi && typeof pluginApi.openPanel === "function") {
+                    pluginApi.openPanel(root.screen, root);
+                }
             }
         }
     }

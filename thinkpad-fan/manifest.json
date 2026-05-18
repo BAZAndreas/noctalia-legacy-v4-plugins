@@ -6,7 +6,8 @@
     "author": "Piero-93",
     "entryPoints": {
         "barWidget": "BarWidget.qml",
-        "panel": "FanPopup.qml"
+        "panel": "FanPopup.qml",
+        "settings": "SettingsView.qml"
     },
     "category": "System",
     "settings": {
