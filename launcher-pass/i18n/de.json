@@ -20,6 +20,14 @@
     "storePath": {
       "label": "Passwort-Speicherpfad",
       "desc": "Benutzerdefinierter Pfad zum Passwort-Speicher (Standard: ~/.password-store)"
+    },
+    "typeDelay": {
+      "label": "Launcher-Schließen-Verzögerung",
+      "desc": "Verzögerung vor Eingabestart in Sekunden (Standard: 0.2)"
+    },
+    "wtypeDelay": {
+      "label": "Wtype-Tastenverzögerung",
+      "desc": "Verzögerung zwischen Tastenanschlägen in ms für wtype (Standard: 12)"
     }
   },
   "notification": {

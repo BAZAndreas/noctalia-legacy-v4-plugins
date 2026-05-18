@@ -20,6 +20,14 @@
     "storePath": {
       "label": "Parola Deposu Yolu",
       "desc": "Parola deposuna özel yol (varsayılan: ~/.password-store)"
+    },
+    "typeDelay": {
+      "label": "Launcher Kapatma Gecikmesi",
+      "desc": "Yazmaya başlamadan önce gecikme saniye cinsinden (varsayılan: 0.2)"
+    },
+    "wtypeDelay": {
+      "label": "Wtype Tuş Gecikmesi",
+      "desc": "wtype için tuşlar arası gecikme ms cinsinden (varsayılan: 12)"
     }
   },
   "notification": {

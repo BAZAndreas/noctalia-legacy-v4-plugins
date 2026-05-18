@@ -20,6 +20,14 @@
     "storePath": {
       "label": "パスワードストアパス",
       "desc": "パスワードストアへのカスタムパス（デフォルト：~/.password-store）"
+    },
+    "typeDelay": {
+      "label": "ランチャー閉じる遅延",
+      "desc": "入力開始前の遅延秒数（デフォルト：0.2）"
+    },
+    "wtypeDelay": {
+      "label": "Wtypeキー入力遅延",
+      "desc": "wtypeのキー間遅延ミリ秒（デフォルト：12）"
     }
   },
   "notification": {

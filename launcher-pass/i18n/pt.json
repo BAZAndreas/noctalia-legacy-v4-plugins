@@ -20,6 +20,14 @@
     "storePath": {
       "label": "Caminho do armazenamento de palavras-passe",
       "desc": "Caminho personalizado para o armazenamento de palavras-passe (predefenido: ~/.password-store)"
+    },
+    "typeDelay": {
+      "label": "Atraso ao fechar o lançador",
+      "desc": "Atraso antes de começar a digitar em segundos (predefinido: 0.2)"
+    },
+    "wtypeDelay": {
+      "label": "Atraso de digitação wtype",
+      "desc": "Atraso entre teclas em ms para wtype (predefinido: 12)"
     }
   },
   "notification": {

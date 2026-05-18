@@ -20,6 +20,14 @@
     "storePath": {
       "label": "密码库路径",
       "desc": "密码库的自定义路径（默认：~/.password-store）"
+    },
+    "typeDelay": {
+      "label": "启动器关闭延迟",
+      "desc": "开始输入前的延迟秒数（默认：0.2）"
+    },
+    "wtypeDelay": {
+      "label": "Wtype按键延迟",
+      "desc": "wtype按键之间延迟毫秒数（默认：12）"
     }
   },
   "notification": {

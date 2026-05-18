@@ -20,6 +20,14 @@
     "storePath": {
       "label": "Ruta del almacén de contraseñas",
       "desc": "Ruta personalizada al almacén de contraseñas (por defecto: ~/.password-store)"
+    },
+    "typeDelay": {
+      "label": "Retraso al cerrar el lanzador",
+      "desc": "Retraso antes de comenzar a escribir en segundos (por defecto: 0.2)"
+    },
+    "wtypeDelay": {
+      "label": "Retraso de pulsación de wtype",
+      "desc": "Retraso entre pulsaciones en ms para wtype (por defecto: 12)"
     }
   },
   "notification": {

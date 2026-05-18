@@ -19,7 +19,9 @@
   "metadata": {
     "commandPrefix": "pass",
     "defaultSettings": {
-      "storePath": ""
+      "storePath": "",
+      "typeDelay": 0.2,
+      "wtypeDelay": 12
     }
   }
 }

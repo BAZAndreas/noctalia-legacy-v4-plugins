@@ -20,6 +20,14 @@
     "storePath": {
       "label": "Chemin du gestionnaire de mots de passe",
       "desc": "Chemin personnalisé vers le gestionnaire de mots de passe (par défaut: ~/.password-store)"
+    },
+    "typeDelay": {
+      "label": "Délai de fermeture du lanceur",
+      "desc": "Délai avant le début de la saisie en secondes (par défaut: 0.2)"
+    },
+    "wtypeDelay": {
+      "label": "Délai de frappe wtype",
+      "desc": "Délai entre les frappes en ms pour wtype (par défaut: 12)"
     }
   },
   "notification": {

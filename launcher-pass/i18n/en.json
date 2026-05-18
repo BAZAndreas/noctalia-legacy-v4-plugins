@@ -20,6 +20,14 @@
     "storePath": {
       "label": "Password Store Path",
       "desc": "Custom path to the password store (default: ~/.password-store)"
+    },
+    "typeDelay": {
+      "label": "Launcher Close Delay",
+      "desc": "Delay before typing starts in seconds (default: 0.2)"
+    },
+    "wtypeDelay": {
+      "label": "Wtype Keystroke Delay",
+      "desc": "Delay between keystrokes in ms for wtype (default: 12)"
     }
   },
   "notification": {

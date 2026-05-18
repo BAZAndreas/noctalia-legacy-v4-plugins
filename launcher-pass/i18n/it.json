@@ -20,6 +20,14 @@
     "storePath": {
       "label": "Percorso dell'archivio password",
       "desc": "Percorso personalizzato all'archivio password (predefinito: ~/.password-store)"
+    },
+    "typeDelay": {
+      "label": "Ritardo chiusura launcher",
+      "desc": "Ritardo prima dell'inizio della digitazione in secondi (predefinito: 0.2)"
+    },
+    "wtypeDelay": {
+      "label": "Ritardo battitura wtype",
+      "desc": "Ritardo tra le battiture in ms per wtype (predefinito: 12)"
     }
   },
   "notification": {
