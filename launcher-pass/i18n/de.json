@@ -1,0 +1,27 @@
+{
+  "result": {
+    "goBack": "Zurück",
+    "folder": "Ordner",
+    "password": "Passwort",
+    "passwordEntry": "Passworteintrag"
+  },
+  "action": {
+    "copyPassword": "Passwort kopieren",
+    "copyPasswordDesc": "Passwort in Zwischenablage kopieren",
+    "typePassword": "Passwort eingeben",
+    "typePasswordDesc": "Passwort mit wtype eingeben",
+    "copyField": "{key} kopieren",
+    "typeField": "{key} eingeben",
+    "copyOtp": "OTP kopieren",
+    "typeOtp": "OTP eingeben"
+  },
+  "settings": {
+    "storePath": {
+      "label": "Passwort-Speicherpfad",
+      "desc": "Benutzerdefinierter Pfad zum Passwort-Speicher (Standard: ~/.password-store)"
+    }
+  },
+  "notification": {
+    "copied": "In Zwischenablage kopiert"
+  }
+}

@@ -72,6 +72,20 @@ Item {
     }
   }
 
+  Process {
+    id: otpProc
+    stdout: StdioCollector {}
+    onExited: function(exitCode, exitStatus) {
+      if (exitCode === 0) {
+        var otp = otpProc.stdout.text.trim()
+        root.selectedEntry.data.otp = otp
+        if (launcher) {
+          launcher.updateResults()
+        }
+      }
+    }
+  }
+
   property string showProcPath: ""
 
   Process {
@@ -197,6 +211,9 @@ Item {
     searchQuery = ""
     isDetailMode = false
     selectedEntry = null
+    if (launcher) {
+      launcher.setSearchText(">pass ")
+    }
     init()
   }
 
@@ -204,7 +221,8 @@ Item {
     var lines = output.split('\n')
     var data = {
       "password": "",
-      "fields": []
+      "fields": [],
+      "otp": null
     }
 
     var passwordLine = true
@@ -428,6 +446,37 @@ Item {
       }()
     })
 
+    if (data.otp !== null && data.otp !== undefined) {
+      var otpRef = { "path": path, "otp": true }
+      results.push({
+        "name": pluginApi?.tr("action.copyOtp") || "Copy OTP",
+        "description": data.otp,
+        "icon": "copy",
+        "isTablerIcon": true,
+        "singleLine": true,
+        "onActivate": function() {
+          var o = otpRef
+          return function() {
+            root.copyOtp(o.path)
+          }
+        }()
+      })
+
+      results.push({
+        "name": pluginApi?.tr("action.typeOtp") || "Type OTP",
+        "description": data.otp,
+        "icon": "typography",
+        "isTablerIcon": true,
+        "singleLine": true,
+        "onActivate": function() {
+          var o = otpRef
+          return function() {
+            root.typeOtp(o.path)
+          }
+        }()
+      })
+    }
+
     for (var i = 0; i < data.fields.length; i++) {
       var field = data.fields[i]
       var fieldRef = { "path": path, "field": field }
@@ -468,6 +517,7 @@ Item {
     showProcPath = path
     var escapedPath = path.replace(/'/g, "'\\''")
     showProc.exec(["pass", "show", escapedPath])
+    otpProc.exec(["pass", "otp", escapedPath])
   }
 
   function copyField(path, field) {
@@ -493,6 +543,22 @@ Item {
     }
 
     var escapedValue = value.replace(/'/g, "'\\''")
+    copyProc.exec(["sh", "-c", "printf '%s' '" + escapedValue + "' | wtype -"])
+    root.resetDetailMode()
+    launcher.close()
+  }
+
+  function copyOtp(path) {
+    var otp = root.selectedEntry ? root.selectedEntry.data.otp : ""
+    var escapedValue = otp.replace(/'/g, "'\\''")
+    copyProc.exec(["sh", "-c", "printf '%s' '" + escapedValue + "' | wl-copy"])
+    root.resetDetailMode()
+    launcher.close()
+  }
+
+  function typeOtp(path) {
+    var otp = root.selectedEntry ? root.selectedEntry.data.otp : ""
+    var escapedValue = otp.replace(/'/g, "'\\''")
     copyProc.exec(["sh", "-c", "printf '%s' '" + escapedValue + "' | wtype -"])
     root.resetDetailMode()
     launcher.close()

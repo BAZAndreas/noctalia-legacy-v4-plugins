@@ -1,0 +1,27 @@
+{
+  "result": {
+    "goBack": "Volver",
+    "folder": "Carpeta",
+    "password": "Contraseña",
+    "passwordEntry": "Entrada de contraseña"
+  },
+  "action": {
+    "copyPassword": "Copiar contraseña",
+    "copyPasswordDesc": "Copiar contraseña al portapapeles",
+    "typePassword": "Escribir contraseña",
+    "typePasswordDesc": "Escribir contraseña con wtype",
+    "copyField": "Copiar {key}",
+    "typeField": "Escribir {key}",
+    "copyOtp": "Copiar OTP",
+    "typeOtp": "Escribir OTP"
+  },
+  "settings": {
+    "storePath": {
+      "label": "Ruta del almacén de contraseñas",
+      "desc": "Ruta personalizada al almacén de contraseñas (por defecto: ~/.password-store)"
+    }
+  },
+  "notification": {
+    "copied": "Copiado al portapapeles"
+  }
+}

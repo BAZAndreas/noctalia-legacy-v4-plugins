@@ -1,0 +1,27 @@
+{
+  "result": {
+    "goBack": "Voltar",
+    "folder": "Pasta",
+    "password": "Palavra-passe",
+    "passwordEntry": "Entrada de palavra-passe"
+  },
+  "action": {
+    "copyPassword": "Copiar palavra-passe",
+    "copyPasswordDesc": "Copiar palavra-passe para a área de transferência",
+    "typePassword": "Digitar palavra-passe",
+    "typePasswordDesc": "Digitar palavra-passe com wtype",
+    "copyField": "Copiar {key}",
+    "typeField": "Digitar {key}",
+    "copyOtp": "Copiar OTP",
+    "typeOtp": "Digitar OTP"
+  },
+  "settings": {
+    "storePath": {
+      "label": "Caminho do armazenamento de palavras-passe",
+      "desc": "Caminho personalizado para o armazenamento de palavras-passe (predefenido: ~/.password-store)"
+    }
+  },
+  "notification": {
+    "copied": "Copiado para a área de transferência"
+  }
+}

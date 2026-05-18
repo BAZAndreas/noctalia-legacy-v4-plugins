@@ -8,6 +8,7 @@ A Noctalia launcher provider plugin for GNU Pass password store.
 - Fuzzy search across all passwords (spaces treated as wildcards)
 - Navigate subdirectories
 - Copy/type password or any field from password entries
+- OTP code support (via `pass otp`)
 - Quick access via `>pass` command
 - Configurable password store path
 
@@ -19,6 +20,8 @@ A Noctalia launcher provider plugin for GNU Pass password store.
 4. Select a password entry to see options:
    - **Copy Password**: Copy password to clipboard
    - **Type Password**: Type password using wtype
+   - **Copy OTP**: Copy current OTP code to clipboard
+   - **Type OTP**: Type current OTP code using wtype
    - **Copy <field>**: Copy any field (username, URL, etc.)
    - **Type <field>**: Type any field using wtype
 
@@ -27,6 +30,7 @@ A Noctalia launcher provider plugin for GNU Pass password store.
 - [GNU Pass](https://www.passwordstore.org/) password store
 - `wl-copy` for clipboard operations
 - `wtype` for keyboard input (optional)
+- `pass-otp` extension for OTP codes (optional)
 
 ## Installation
 

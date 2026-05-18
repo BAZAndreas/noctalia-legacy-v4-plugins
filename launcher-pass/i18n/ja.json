@@ -1,0 +1,27 @@
+{
+  "result": {
+    "goBack": "戻る",
+    "folder": "フォルダ",
+    "password": "パスワード",
+    "passwordEntry": "パスワードエントリ"
+  },
+  "action": {
+    "copyPassword": "パスワードをコピー",
+    "copyPasswordDesc": "パスワードをクリップボードにコピー",
+    "typePassword": "パスワードを入力",
+    "typePasswordDesc": "wtypeでパスワードを入力",
+    "copyField": "{key}をコピー",
+    "typeField": "{key}を入力",
+    "copyOtp": "OTPをコピー",
+    "typeOtp": "OTPを入力"
+  },
+  "settings": {
+    "storePath": {
+      "label": "パスワードストアパス",
+      "desc": "パスワードストアへのカスタムパス（デフォルト：~/.password-store）"
+    }
+  },
+  "notification": {
+    "copied": "クリップボードにコピーしました"
+  }
+}

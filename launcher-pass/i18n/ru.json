@@ -1,0 +1,27 @@
+{
+  "result": {
+    "goBack": "Назад",
+    "folder": "Папка",
+    "password": "Пароль",
+    "passwordEntry": "Запись пароля"
+  },
+  "action": {
+    "copyPassword": "Копировать пароль",
+    "copyPasswordDesc": "Копировать пароль в буфер обмена",
+    "typePassword": "Ввести пароль",
+    "typePasswordDesc": "Ввести пароль с помощью wtype",
+    "copyField": "Копировать {key}",
+    "typeField": "Ввести {key}",
+    "copyOtp": "Копировать OTP",
+    "typeOtp": "Ввести OTP"
+  },
+  "settings": {
+    "storePath": {
+      "label": "Путь к хранилищу паролей",
+      "desc": "Пользовательский путь к хранилищу паролей (по умолчанию: ~/.password-store)"
+    }
+  },
+  "notification": {
+    "copied": "Скопировано в буфер обмена"
+  }
+}

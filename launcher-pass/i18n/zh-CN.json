@@ -1,0 +1,27 @@
+{
+  "result": {
+    "goBack": "返回",
+    "folder": "文件夹",
+    "password": "密码",
+    "passwordEntry": "密码条目"
+  },
+  "action": {
+    "copyPassword": "复制密码",
+    "copyPasswordDesc": "复制密码到剪贴板",
+    "typePassword": "输入密码",
+    "typePasswordDesc": "使用 wtype 输入密码",
+    "copyField": "复制{key}",
+    "typeField": "输入{key}",
+    "copyOtp": "复制 OTP",
+    "typeOtp": "输入 OTP"
+  },
+  "settings": {
+    "storePath": {
+      "label": "密码库路径",
+      "desc": "密码库的自定义路径（默认：~/.password-store）"
+    }
+  },
+  "notification": {
+    "copied": "已复制到剪贴板"
+  }
+}

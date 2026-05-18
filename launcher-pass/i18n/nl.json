@@ -1,0 +1,27 @@
+{
+  "result": {
+    "goBack": "Terug",
+    "folder": "Map",
+    "password": "Wachtwoord",
+    "passwordEntry": "Wachtwoordentry"
+  },
+  "action": {
+    "copyPassword": "Wachtwoord kopiëren",
+    "copyPasswordDesc": "Wachtwoord naar klembord kopiëren",
+    "typePassword": "Wachtwoord typen",
+    "typePasswordDesc": "Wachtwoord typen met wtype",
+    "copyField": "{key} kopiëren",
+    "typeField": "{key} typen",
+    "copyOtp": "OTP kopiëren",
+    "typeOtp": "OTP typen"
+  },
+  "settings": {
+    "storePath": {
+      "label": "Wachtwoordopslagpad",
+      "desc": "Aangepast pad naar de wachtwoordopslag (standaard: ~/.password-store)"
+    }
+  },
+  "notification": {
+    "copied": "Gekopiëerd naar klembord"
+  }
+}

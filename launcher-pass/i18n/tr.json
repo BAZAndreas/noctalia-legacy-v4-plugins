@@ -1,0 +1,27 @@
+{
+  "result": {
+    "goBack": "Geri dön",
+    "folder": "Klasör",
+    "password": "Parola",
+    "passwordEntry": "Parola girişi"
+  },
+  "action": {
+    "copyPassword": "Parolayı kopyala",
+    "copyPasswordDesc": "Parolayı panoya kopyala",
+    "typePassword": "Parolayı yaz",
+    "typePasswordDesc": "Parolayı wtype ile yaz",
+    "copyField": "{key} kopyala",
+    "typeField": "{key} yaz",
+    "copyOtp": "OTP kopyala",
+    "typeOtp": "OTP yaz"
+  },
+  "settings": {
+    "storePath": {
+      "label": "Parola Deposu Yolu",
+      "desc": "Parola deposuna özel yol (varsayılan: ~/.password-store)"
+    }
+  },
+  "notification": {
+    "copied": "Panoya kopyalandı"
+  }
+}
