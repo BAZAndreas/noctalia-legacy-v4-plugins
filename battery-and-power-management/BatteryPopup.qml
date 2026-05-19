@@ -240,7 +240,7 @@ Item {
                     font.weight: Font.Bold
                     pointSize: (typeof Style !== "undefined") ? Style.fontSizeS : 10
                     color: (typeof Color !== "undefined") ? Color.mOnSurface : "#ffffff"
-                    Layout.preferredWidth: 32 * Style.uiScaleRatio
+                    Layout.preferredWidth: 40 * Style.uiScaleRatio
                     horizontalAlignment: Text.AlignRight
                     Layout.alignment: Qt.AlignVCenter
                 }
