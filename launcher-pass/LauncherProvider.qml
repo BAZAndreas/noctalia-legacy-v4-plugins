@@ -147,11 +147,13 @@ Item {
     var targetPath = resolveDir()
     var escapedPath = shellEscape(targetPath)
     if (searchQuery !== "") {
-      findProc.exec(["find", escapedPath, "-type", "f", "-name", "*.gpg", "-printf", "%P\n"])
+      findProc.exec(["find", escapedPath,
+        "-mindepth", "1", "-type", "f", "-name", "*.gpg", "-printf", "%P\n"])
     } else {
       findProc.exec(["find", escapedPath,
-        "-maxdepth", "1", "-type", "f", "-name", "*.gpg", "-printf", "%f\n",
-        "-o", "-maxdepth", "1", "-type", "d", "-not", "-name", ".*", "-printf", "%f/\n"])
+        "-maxdepth", "1", "-mindepth", "1",
+        "-type", "f", "-name", "*.gpg", "-printf", "%f\n",
+        "-o", "-type", "d", "-not", "-name", ".*", "-printf", "%f/\n"])
     }
   }
 
