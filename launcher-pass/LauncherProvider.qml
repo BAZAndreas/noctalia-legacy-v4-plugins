@@ -252,27 +252,6 @@ Item {
     return score
   }
 
-  function findMatchRanges(query, target) {
-    query = query.toLowerCase()
-    target = target.toLowerCase()
-    var ranges = []
-    var queryParts = query.split(/\s+/).filter(function(p) { return p.length > 0 })
-    for (var p = 0; p < queryParts.length; p++) {
-      var part = queryParts[p]
-      for (var i = 0; i <= target.length - part.length; i++) {
-        var match = true
-        for (var j = 0; j < part.length; j++) {
-          if (target[i + j] !== part[j]) { match = false; break }
-        }
-        if (match) {
-          ranges.push({ start: i, end: i + part.length })
-          break
-        }
-      }
-    }
-    return ranges
-  }
-
   function handleCommand(searchText) {
     return searchText.startsWith(">pass")
   }
@@ -318,7 +297,7 @@ Item {
     var results = []
     if (currentPath !== "") {
       results.push({
-        name: "..",
+        name: pluginApi?.tr("result.goBack"),
         description: currentPath,
         icon: "arrow-left",
         isTablerIcon: true,
@@ -336,7 +315,7 @@ Item {
       }
     }
 
-    scored.sort(function(a, b) { return b.entry.name - a.entry.name })
+    scored.sort(function(a, b) { return a.entry.name.localeCompare(b.entry.name) })
     scored.sort(function(a, b) { return b.score - a.score })
 
     for (var j = 0; j < Math.min(scored.length, 50); j++) {
@@ -370,7 +349,7 @@ Item {
     var path = root.selectedEntry.path
 
     results.push({
-      name: "..",
+      name: pluginApi?.tr("result.goBack"),
       description: path,
       icon: "arrow-left",
       isTablerIcon: true,
