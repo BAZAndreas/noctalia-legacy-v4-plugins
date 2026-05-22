@@ -11,7 +11,7 @@ Item {
     
     readonly property var mainWidget: pluginApi?.mainInstance || null
 
-    property real contentPreferredWidth: (panelContent.implicitWidth + Style.marginM * 6) * Style.uiScaleRatio
+    property real contentPreferredWidth: (panelContent.implicitWidth + Style.marginM * 14) * Style.uiScaleRatio
     property real contentPreferredHeight: (mainLayout.implicitHeight + Style.marginM * 4) * Style.uiScaleRatio
     
     readonly property var geometryPlaceholder: mainLayout
@@ -20,7 +20,7 @@ Item {
     anchors.fill: parent
 
     Component.onCompleted: {
-        if (root.mainWidget?.updatePowerProfile) {
+        if (root.mainWidget && typeof root.mainWidget.updatePowerProfile === "function") {
             root.mainWidget.updatePowerProfile();
         }
     }
@@ -53,7 +53,7 @@ Item {
                     Layout.fillWidth: false
 
                     NIcon {
-                        icon: (root.mainWidget?.batStatus === "Charging" || root.mainWidget?.batStatus === "Full") ? "battery-charging" : "battery-4"
+                        icon: (root.mainWidget?.batStatus === pluginApi?.tr("battery.status_charging") || root.mainWidget?.batStatus === pluginApi?.tr("battery.status_full")) ? "battery-charging" : "battery-4"
                         pointSize: Style.fontSizeXL
                         color: Color.mPrimary
                         Layout.alignment: Qt.AlignHCenter
@@ -81,7 +81,7 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
 
                     NText {
-                        text: root.mainWidget ? root.mainWidget.batStatus : "Unknown"
+                        text: root.mainWidget ? root.mainWidget.batStatus : pluginApi?.tr("battery.status_unknown")
                         font.weight: Font.Bold
                         pointSize: Style.fontSizeS
                         color: Color.mOnSurface
@@ -90,8 +90,8 @@ Item {
                     NText {
                         text: {
                             if (!root.mainWidget) return "...";
-                            if (root.mainWidget.batStatus === "Charging") return "Time to full: " + root.mainWidget.timeRemaining;
-                            else if (root.mainWidget.batStatus === "Discharging") return "Remaining: " + root.mainWidget.timeRemaining;
+                            if (root.mainWidget.batStatus === pluginApi?.tr("battery.status_charging")) return pluginApi?.tr("battery.time_to_full") + root.mainWidget.timeRemaining;
+                            else if (root.mainWidget.batStatus === pluginApi?.tr("battery.status_discharging")) return pluginApi?.tr("battery.remaining") + root.mainWidget.timeRemaining;
                             else return root.mainWidget.wattNum.toFixed(1) + " W";
                         }
                         pointSize: Style.fontSizeXS
@@ -163,79 +163,21 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
                 }
 
-                Item {
-                    id: customSlider
+                NSlider {
+                    id: thresholdSlider
                     Layout.fillWidth: true
-                    height: 32 * Style.uiScaleRatio
                     Layout.alignment: Qt.AlignVCenter
-
-                    readonly property real minVal: 50
-                    readonly property real maxVal: 100
-                    property real currentVal: root.mainWidget ? root.mainWidget.batteryThreshold : 80
-
-                    Rectangle {
-                        id: track
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: 4 * Style.uiScaleRatio
-                        radius: Style.radiusS / 2
-                        color: Color.mSurface
-
-                        Rectangle {
-                            anchors.left: parent.left
-                            height: parent.height
-                            radius: Style.radiusS / 2
-                            color: Color.mPrimary
-                            width: {
-                                if (track.width <= 0) return 0;
-                                let pct = (customSlider.currentVal - customSlider.minVal) / (customSlider.maxVal - customSlider.minVal);
-                                return pct * track.width;
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        id: handle
-                        width: 14 * Style.uiScaleRatio
-                        height: 14 * Style.uiScaleRatio
-                        radius: width / 2
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: {
-                            if (track.width <= 0) return 0;
-                            let pct = (customSlider.currentVal - customSlider.minVal) / (customSlider.maxVal - customSlider.minVal);
-                            return (pct * track.width) - (width / 2);
-                        }
-                        color: sliderMouseArea.pressed ? Color.mPrimary : Color.mOnPrimary
-                        border.color: Color.mPrimary
-                        border.width: Style.capsuleBorderWidth * 2
-                    }
-
-                    MouseArea {
-                        id: sliderMouseArea
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        
-                        function handlePositionUpdate(mouseX) {
-                            if (track.width <= 0) return;
-                            let clampedX = Math.max(0, Math.min(mouseX, track.width));
-                            let pct = clampedX / track.width;
-                            let rawValue = customSlider.minVal + (pct * (customSlider.maxVal - customSlider.minVal));
-                            let steppedValue = Math.round(rawValue / 5) * 5;
-                            let finalValue = Math.max(customSlider.minVal, Math.min(steppedValue, customSlider.maxVal));
-                            
-                            if (root.mainWidget && root.mainWidget.batteryThreshold !== finalValue) {
-                                root.mainWidget.setBatteryThreshold(finalValue);
-                            }
-                        }
-
-                        onPressed: (mouse) => handlePositionUpdate(mouse.x)
-                        onPositionChanged: (mouse) => handlePositionUpdate(mouse.x)
-                    }
+                    
+                    from: 50
+                    to: 100
+                    stepSize: 5
+                    value: root.mainWidget ? root.mainWidget.batteryThreshold : 80
+                    
+                    onMoved: root.mainWidget?.setBatteryThreshold(value)
                 }
 
                 NText {
-                    text: customSlider.currentVal + "%"
+                    text: thresholdSlider.value + "%"
                     font.weight: Font.Bold
                     pointSize: Style.fontSizeS
                     color: Color.mOnSurface

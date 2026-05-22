@@ -24,7 +24,7 @@ Item {
 
     property int batPercent: 0
     property real wattNum: 0.0
-    property string batStatus: "Unknown"
+    property string batStatus: pluginApi?.tr("battery.status_unknown")
     property string timeRemaining: "..."
     
     property string currentProfile: "balanced"
@@ -172,7 +172,7 @@ Item {
                 if (content.indexOf("POWER_SUPPLY_ENERGY_NOW=") !== -1) {
                     let energyNow = remain / 1000000.0;
                     if (root.batStatus === "Discharging") totalHours = energyNow / root.wattNum;
-                    else if (root.batStatus === "Charging") {
+                    else if (root.batStatus === pluginApi?.tr("battery.status_charging")) {
                         let energyFull = 50.0;
                         for (let j = 0; j < lines.length; j++) {
                             if (lines[j].indexOf("POWER_SUPPLY_ENERGY_FULL=") === 0) {
@@ -187,7 +187,7 @@ Item {
                     let currentNow = rate / 1000000.0;
                     if (currentNow > 0) {
                         if (root.batStatus === "Discharging") totalHours = chargeNow / currentNow;
-                        else if (root.batStatus === "Charging") {
+                        else if (root.batStatus === pluginApi?.tr("battery.status_charging")) {
                             let chargeFull = 4.5;
                             for (let j = 0; j < lines.length; j++) {
                                 if (lines[j].indexOf("POWER_SUPPLY_CHARGE_FULL=") === 0) {
@@ -205,7 +205,7 @@ Item {
                     let m = Math.floor((totalHours - h) * 60);
                     root.timeRemaining = h + "h " + m + "m";
                 } else root.timeRemaining = "0h 0m";
-            } else if (root.batStatus === "Full" || root.batStatus === "Not charging") root.timeRemaining = "0h 0m";
+            } else if (root.batStatus === "Full" || root.batStatus === pluginApi?.tr("battery.status_not_charging")) root.timeRemaining = "0h 0m";
             else root.timeRemaining = "...";
         }
     }
@@ -219,9 +219,9 @@ Item {
         
         color: mouseArea.containsMouse 
             ? Color.mHover 
-            : (root.batStatus === "Charging" ? Color.mPrimary : Style.capsuleColor)
+            : (root.batStatus === pluginApi?.tr("battery.status_charging") ? Color.mPrimary : Style.capsuleColor)
 
-        border.color: root.batStatus === "Charging" ? Color.mPrimary : Style.capsuleBorderColor
+        border.color: root.batStatus === pluginApi?.tr("battery.status_charging") ? Color.mPrimary : Style.capsuleBorderColor
         border.width: Style.capsuleBorderWidth
 
         RowLayout {
@@ -230,16 +230,16 @@ Item {
             spacing: Style.marginS
 
             NIcon {
-                icon: (root.batStatus === "Charging" || root.batStatus === "Full") ? "battery-charging" : "battery-4"
-                color: mouseArea.containsMouse || root.batStatus === "Charging" ? Color.mOnPrimary : Color.mOnSurface
+                icon: (root.batStatus === pluginApi?.tr("battery.status_charging") || root.batStatus === pluginApi?.tr("battery.status_full")) ? "battery-charging" : "battery-4"
+                color: mouseArea.containsMouse || root.batStatus === pluginApi?.tr("battery.status_charging") ? Color.mOnPrimary : Color.mOnSurface
             }
 
             NText {
-                text: root.batPercent + "% " + (root.batStatus === "Charging" ? "+" : "-") + root.wattNum.toFixed(1) + "W"
+                text: root.batPercent + "% " + (root.batStatus === pluginApi?.tr("battery.status_charging") ? "+" : "-") + root.wattNum.toFixed(1) + "W"
                 pointSize: barFontSize
                 font.family: root.fixedFont
                 font.weight: Font.Bold
-                color: mouseArea.containsMouse || root.batStatus === "Charging" ? Color.mOnPrimary : Color.mOnSurface
+                color: mouseArea.containsMouse || root.batStatus === pluginApi?.tr("battery.status_charging") ? Color.mOnPrimary : Color.mOnSurface
             }
         }
     }
