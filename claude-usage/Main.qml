@@ -22,6 +22,11 @@ Item {
     property real   weeklyPercent: -1
     property string weeklyResetsIn: ""
 
+    property bool   extraEnabled: false
+    property real   extraUsed:    0
+    property real   extraLimit:   0
+    property real   extraPercent: 0
+
     property var    todayByModel:  []
     readonly property string barMetric:   pluginApi?.pluginSettings?.barMetric   ?? "auto"
     readonly property real   dailyBudget: pluginApi?.pluginSettings?.dailyBudget ?? 0
@@ -54,6 +59,10 @@ Item {
                 root.sessionResetsIn       = d.limits?.session?.resets ?? "";
                 root.weeklyPercent         = d.limits?.weekly?.percent ?? -1;
                 root.weeklyResetsIn        = d.limits?.weekly?.resets ?? "";
+                root.extraEnabled          = d.limits?.extra?.enabled  ?? false;
+                root.extraUsed             = d.limits?.extra?.used     ?? 0;
+                root.extraLimit            = d.limits?.extra?.limit    ?? 0;
+                root.extraPercent          = d.limits?.extra?.percent  ?? 0;
                 root.todayByModel = d.today?.by_model  ?? [];
             } catch(e) {}
         }

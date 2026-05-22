@@ -98,7 +98,7 @@ Item {
             // ── Session + Weekly ─────────────────────────────────────────────
             NBox {
                 Layout.fillWidth: true
-                visible: (main?.sessionPercent ?? -1) >= 0
+                visible: (main?.sessionPercent ?? -1) >= 0 || (main?.extraEnabled ?? false)
                 Layout.preferredHeight: Math.round(limitsCol.implicitHeight + Style.marginM * 2)
 
                 ColumnLayout {
@@ -218,6 +218,69 @@ Item {
                             NLabel {
                                 visible: (main?.weeklyResetsIn ?? "") !== ""
                                 label: pluginApi?.tr("panel.resets") + " " + (main?.weeklyResetsIn ?? "")
+                                labelColor: Color.mOnSurfaceVariant
+                            }
+                        }
+                    }
+
+                    // Extra usage (usage credits)
+                    ColumnLayout {
+                        visible: main?.extraEnabled ?? false
+                        Layout.fillWidth: true
+                        spacing: Math.round(4 * Style.uiScaleRatio)
+
+                        // Divider
+                        Rectangle {
+                            Layout.fillWidth: true
+                            height: 1
+                            color: Color.mSurfaceVariant
+                            opacity: 0.5
+                        }
+
+                        NLabel {
+                            label: pluginApi?.tr("panel.extra-usage")
+                            labelColor: Color.mOnSurface
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: Style.marginS
+
+                            Rectangle {
+                                width:  Math.round(8 * Style.uiScaleRatio)
+                                height: width
+                                radius: width / 2
+                                color: root.dotColor(main?.extraPercent ?? 0)
+                            }
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                height: Math.round(5 * Style.uiScaleRatio)
+                                radius: height / 2
+                                color: Color.mSurfaceVariant
+
+                                Rectangle {
+                                    width: parent.width * Math.min(1, Math.max(0, (main?.extraPercent ?? 0) / 100))
+                                    height: parent.height
+                                    radius: parent.radius
+                                    color: root.barColor(main?.extraPercent ?? 0)
+                                    Behavior on width { NumberAnimation { duration: 300 } }
+                                }
+                            }
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+
+                            NLabel {
+                                label: root.fmtCost(main?.extraUsed ?? 0) + " " + pluginApi?.tr("panel.used") +
+                                       "  ·  " + root.fmtCost(main?.extraLimit ?? 0) + " " + pluginApi?.tr("panel.limit")
+                                labelColor: Color.mOnSurfaceVariant
+                                Layout.fillWidth: true
+                            }
+
+                            NLabel {
+                                label: Math.round(main?.extraPercent ?? 0) + "%"
                                 labelColor: Color.mOnSurfaceVariant
                             }
                         }

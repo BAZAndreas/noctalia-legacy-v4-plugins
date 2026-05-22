@@ -98,7 +98,15 @@ def fetch_limits():
         )
         with urllib.request.urlopen(req, timeout=5) as r:
             data = json.loads(r.read())
-        result = {"session": parse(data.get("five_hour")), "weekly": parse(data.get("seven_day"))}
+        eu = data.get("extra_usage")
+        extra = {
+            "enabled":  eu.get("is_enabled", False),
+            "used":     round(eu.get("used_credits",  0) / 100, 2),
+            "limit":    round(eu.get("monthly_limit", 0) / 100, 2),
+            "percent":  eu.get("utilization", 0),
+            "currency": eu.get("currency", "USD"),
+        } if eu else None
+        result = {"session": parse(data.get("five_hour")), "weekly": parse(data.get("seven_day")), "extra": extra}
         LIMITS_CACHE.parent.mkdir(parents=True, exist_ok=True)
         LIMITS_CACHE.write_text(json.dumps(result))
         return result
@@ -106,7 +114,7 @@ def fetch_limits():
         try:
             return json.loads(LIMITS_CACHE.read_text())
         except Exception:
-            return {"session": None, "weekly": None}
+            return {"session": None, "weekly": None, "extra": None}
 
 today     = date.today().isoformat()
 month_pfx = today[:7]
