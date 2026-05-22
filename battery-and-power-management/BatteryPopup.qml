@@ -20,7 +20,7 @@ Item {
     anchors.fill: parent
 
     Component.onCompleted: {
-        if (root.mainWidget && typeof root.mainWidget.updatePowerProfile === "function") {
+        if (root.mainWidget?.updatePowerProfile) {
             root.mainWidget.updatePowerProfile();
         }
     }
@@ -36,15 +36,15 @@ Item {
             Layout.preferredWidth: root.contentPreferredWidth - (Style.marginM * 2)
             Layout.preferredHeight: 64 * Style.uiScaleRatio
             
-            color: (typeof Color !== "undefined") ? Color.mSurfaceVariant : "#313244"
-            radius: (typeof Style !== "undefined") ? (Style.capsuleRadius ?? Style.radiusM) : 6
-            border.color: (typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff"
+            color: Color.mSurfaceVariant
+            radius: Style.capsuleRadius ?? Style.radiusM
+            border.color: Style.capsuleBorderColor
             border.width: Style.capsuleBorderWidth
 
             RowLayout {
                 id: panelContent
                 anchors.centerIn: parent
-                anchors.margins: (typeof Style !== "undefined") ? Style.marginL : 16
+                anchors.margins: Style.marginL
                 spacing: Style.marginL
 
                 ColumnLayout {
@@ -53,16 +53,16 @@ Item {
                     Layout.fillWidth: false
 
                     NIcon {
-                        icon: (root.mainWidget && (root.mainWidget.batStatus === "Charging" || root.mainWidget.batStatus === "Full")) ? "battery-charging" : "battery-4"
+                        icon: (root.mainWidget?.batStatus === "Charging" || root.mainWidget?.batStatus === "Full") ? "battery-charging" : "battery-4"
                         pointSize: Style.fontSizeXL
-                        color: (typeof Color !== "undefined") ? Color.mPrimary : "#3355ff"
+                        color: Color.mPrimary
                         Layout.alignment: Qt.AlignHCenter
                     }
 
                     NText {
                         text: root.mainWidget ? root.mainWidget.batPercent + "%" : "0%"
                         font.weight: Font.Bold
-                        pointSize: (typeof Style !== "undefined") ? Style.fontSizeM : 11
+                        pointSize: Style.fontSizeM
                         Layout.alignment: Qt.AlignHCenter
                         horizontalAlignment: Text.AlignHCenter
                     }
@@ -71,7 +71,7 @@ Item {
                 Rectangle {
                     Layout.fillHeight: true
                     width: 1
-                    color: (typeof Color !== "undefined") ? Color.mOutline : "#33ffffff"
+                    color: Color.mOutline
                     opacity: 0.15
                 }
 
@@ -83,23 +83,19 @@ Item {
                     NText {
                         text: root.mainWidget ? root.mainWidget.batStatus : "Unknown"
                         font.weight: Font.Bold
-                        pointSize: (typeof Style !== "undefined") ? Style.fontSizeS : 10
-                        color: (typeof Color !== "undefined") ? Color.mOnSurface : "#ffffff"
+                        pointSize: Style.fontSizeS
+                        color: Color.mOnSurface
                     }
 
                     NText {
                         text: {
                             if (!root.mainWidget) return "...";
-                            if (root.mainWidget.batStatus === "Charging") {
-                                return "Time to full: " + root.mainWidget.timeRemaining;
-                            } else if (root.mainWidget.batStatus === "Discharging") {
-                                return "Remaining: " + root.mainWidget.timeRemaining;
-                            } else {
-                                return root.mainWidget.wattNum.toFixed(1) + " W";
-                            }
+                            if (root.mainWidget.batStatus === "Charging") return "Time to full: " + root.mainWidget.timeRemaining;
+                            else if (root.mainWidget.batStatus === "Discharging") return "Remaining: " + root.mainWidget.timeRemaining;
+                            else return root.mainWidget.wattNum.toFixed(1) + " W";
                         }
-                        pointSize: (typeof Style !== "undefined") ? Style.fontSizeXS : 9
-                        color: (typeof Color !== "undefined") ? Color.mOnSurfaceVariant : "#a6adc8"
+                        pointSize: Style.fontSizeXS
+                        color: Color.mOnSurfaceVariant
                     }
                 }
             }
@@ -111,9 +107,9 @@ Item {
             Layout.preferredWidth: batteryCapsule.Layout.preferredWidth
             Layout.preferredHeight: 52 * Style.uiScaleRatio
             
-            color: (typeof Color !== "undefined") ? Color.mSurfaceVariant : "#313244"
-            radius: (typeof Style !== "undefined") ? (Style.capsuleRadius ?? Style.radiusM) : 6
-            border.color: (typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff"
+            color: Color.mSurfaceVariant
+            radius: Style.capsuleRadius ?? Style.radiusM
+            border.color: Style.capsuleBorderColor
             border.width: Style.capsuleBorderWidth
 
             RowLayout {
@@ -149,21 +145,21 @@ Item {
             Layout.preferredWidth: batteryCapsule.Layout.preferredWidth
             Layout.preferredHeight: 52 * Style.uiScaleRatio
             
-            color: (typeof Color !== "undefined") ? Color.mSurfaceVariant : "#313244"
-            radius: (typeof Style !== "undefined") ? (Style.capsuleRadius ?? Style.radiusM) : 6
-            border.color: (typeof Style !== "undefined") ? Style.capsuleBorderColor : "#33ffffff"
+            color: Color.mSurfaceVariant
+            radius: Style.capsuleRadius ?? Style.radiusM
+            border.color: Style.capsuleBorderColor
             border.width: Style.capsuleBorderWidth
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: (typeof Style !== "undefined") ? Style.marginL : 16
-                anchors.rightMargin: (typeof Style !== "undefined") ? Style.marginL : 16
+                anchors.leftMargin: Style.marginL
+                anchors.rightMargin: Style.marginL
                 spacing: Style.marginM
 
                 NIcon {
                     icon: "shield-heart"
                     pointSize: Style.fontSizeM
-                    color: (typeof Color !== "undefined") ? Color.mOnSurfaceVariant : "#a6adc8"
+                    color: Color.mOnSurfaceVariant
                     Layout.alignment: Qt.AlignVCenter
                 }
 
@@ -184,13 +180,13 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         height: 4 * Style.uiScaleRatio
                         radius: Style.radiusS / 2
-                        color: (typeof Color !== "undefined") ? Color.mSurface : "#1e1e2e"
+                        color: Color.mSurface
 
                         Rectangle {
                             anchors.left: parent.left
                             height: parent.height
                             radius: Style.radiusS / 2
-                            color: (typeof Color !== "undefined") ? Color.mPrimary : "#3355ff"
+                            color: Color.mPrimary
                             width: {
                                 if (track.width <= 0) return 0;
                                 let pct = (customSlider.currentVal - customSlider.minVal) / (customSlider.maxVal - customSlider.minVal);
@@ -210,10 +206,8 @@ Item {
                             let pct = (customSlider.currentVal - customSlider.minVal) / (customSlider.maxVal - customSlider.minVal);
                             return (pct * track.width) - (width / 2);
                         }
-                        color: sliderMouseArea.pressed 
-                            ? ((typeof Color !== "undefined") ? Color.mPrimary : "#3355ff")
-                            : ((typeof Color !== "undefined") ? Color.mOnPrimary : "#ffffff")
-                        border.color: (typeof Color !== "undefined") ? Color.mPrimary : "#3355ff"
+                        color: sliderMouseArea.pressed ? Color.mPrimary : Color.mOnPrimary
+                        border.color: Color.mPrimary
                         border.width: Style.capsuleBorderWidth * 2
                     }
 
@@ -227,7 +221,6 @@ Item {
                             let clampedX = Math.max(0, Math.min(mouseX, track.width));
                             let pct = clampedX / track.width;
                             let rawValue = customSlider.minVal + (pct * (customSlider.maxVal - customSlider.minVal));
-                            
                             let steppedValue = Math.round(rawValue / 5) * 5;
                             let finalValue = Math.max(customSlider.minVal, Math.min(steppedValue, customSlider.maxVal));
                             
@@ -244,8 +237,8 @@ Item {
                 NText {
                     text: customSlider.currentVal + "%"
                     font.weight: Font.Bold
-                    pointSize: (typeof Style !== "undefined") ? Style.fontSizeS : 10
-                    color: (typeof Color !== "undefined") ? Color.mOnSurface : "#ffffff"
+                    pointSize: Style.fontSizeS
+                    color: Color.mOnSurface
                     Layout.preferredWidth: 40 * Style.uiScaleRatio
                     horizontalAlignment: Text.AlignRight
                     Layout.alignment: Qt.AlignVCenter
@@ -266,12 +259,9 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: (typeof Style !== "undefined") ? (Style.radiusS ?? 4) : 4
+            radius: Style.radiusS ?? 4
             
-            color: parent.active 
-                ? ((typeof Color !== "undefined") ? Color.mPrimary : "#3355ff") 
-                : ((typeof Color !== "undefined") ? Color.mSurface : "#1e1e2e")
-                
+            color: parent.active ? Color.mPrimary : Color.mSurface
             opacity: parent.active ? 1.0 : (parent.containsMouse ? 0.8 : 0.0)
         }
 
@@ -280,8 +270,8 @@ Item {
             icon: parent.icon
             pointSize: Style.fontSizeS
             color: parent.active 
-                ? ((typeof Color !== "undefined") ? Color.mOnPrimary : "#ffffff") 
-                : (parent.containsMouse ? ((typeof Color !== "undefined") ? Color.mPrimary : "#3355ff") : ((typeof Color !== "undefined") ? Color.mOnSurfaceVariant : "#a6adc8"))
+                ? Color.mOnPrimary 
+                : (parent.containsMouse ? Color.mPrimary : Color.mOnSurfaceVariant)
         }
     }
 }
