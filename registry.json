@@ -928,10 +928,10 @@
     {
       "id": "model-usage",
       "name": "Model Usage",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "official": false,
       "author": "cmptr",
-      "description": "Shows AI coding assistant usage stats in the bar with detail panel (Claude Code, Codex, Copilot, OpenRouter, Zen)",
+      "description": "Shows AI coding assistant usage stats in the bar with detail panel (Claude Code, Codex, Copilot, Gemini, OpenRouter, Zen)",
       "repository": "https://github.com/noctalia-dev/noctalia-plugins",
       "minNoctaliaVersion": "3.6.0",
       "license": "MIT",
@@ -940,7 +940,7 @@
         "Productivity",
         "AI"
       ],
-      "lastUpdated": "2026-03-29T19:05:12-04:00"
+      "lastUpdated": "2026-05-24T10:32:15+03:00"
     },
     {
       "id": "monique",
