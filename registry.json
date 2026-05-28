@@ -928,7 +928,7 @@
     {
       "id": "model-usage",
       "name": "Model Usage",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "official": false,
       "author": "cmptr",
       "description": "Shows AI coding assistant usage stats in the bar with detail panel (Claude Code, Codex, Copilot, Gemini, OpenRouter, Zen)",
@@ -940,7 +940,7 @@
         "Productivity",
         "AI"
       ],
-      "lastUpdated": "2026-05-24T10:32:15+03:00"
+      "lastUpdated": "2026-05-27T21:02:20-05:00"
     },
     {
       "id": "monique",
