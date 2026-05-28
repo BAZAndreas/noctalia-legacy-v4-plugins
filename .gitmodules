@@ -1,0 +1,3 @@
+[submodule "urgent-on-notification"]
+	path = urgent-on-notification
+	url = https://github.com/matt-hb/urgent-on-notification
