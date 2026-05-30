@@ -145,7 +145,7 @@ Item {
         id: contextMenu
         model: [
             {
-                "label": pluginApi?.tr("menu.settings") || "Settings",
+                "label": pluginApi?.tr("menu.settings"),
                 "action": "settings",
                 "icon": "settings"
             }
