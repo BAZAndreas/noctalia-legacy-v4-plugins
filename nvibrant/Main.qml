@@ -12,7 +12,8 @@ Item {
 
   readonly property bool vibrantEnabled: cfg.enabled ?? defaults.enabled ?? false
   readonly property int vibranceValue: cfg.vibranceValue ?? defaults.vibranceValue ?? 512
-  readonly property int displayIndex: cfg.displayIndex ?? defaults.displayIndex ?? 0
+  // stored 1-based (1 = port 0), converted on use
+  readonly property int displayIndex: (cfg.displayIndex ?? defaults.displayIndex ?? 1) - 1
 
   function buildCmd(value) {
     var args = ["/usr/sbin/nvibrant"]
