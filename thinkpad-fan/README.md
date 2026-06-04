@@ -9,7 +9,7 @@ A resilient system utility plugin designed for the **Noctalia** desktop shell en
 *   **Thermal Zone Inspector**: Contextual diagnostic popup panel tracking active primary sensor clusters.
 *   **Stateful Micro-Pill Alerts**: Custom visual states that color-shift dynamically based on active overrides:
     *   Turns **Solid Crimson Red** if safety limits are bypassed by forcing the fans off (`level 0`).
-    *   Shifts to system `mTertiary` palette states when explicit constant numeric thresholds are locked down.
+    *   Shifts to system `mPrimary` palette states when explicit constant numeric thresholds are locked down.
 
 ## Prerequisites
 -------------

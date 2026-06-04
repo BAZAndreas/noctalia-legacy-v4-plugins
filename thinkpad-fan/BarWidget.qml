@@ -123,6 +123,7 @@ Item {
     }
 
     Timer { id: refreshTimer; interval: 300; repeat: false; onTriggered: { fanLoader.reload(); tempLoader.reload(); } }
+    // procfs/sysfs don't emit inotify events — polling is required for live values
     Timer { interval: 2000; running: true; repeat: true; triggeredOnStart: true; onTriggered: { fanLoader.reload(); tempLoader.reload(); } }
 
     readonly property bool isCustomActive: root.fanLevel !== "auto" && root.fanLevel !== "0"
