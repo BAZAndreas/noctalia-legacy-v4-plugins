@@ -23,8 +23,17 @@ Item {
     readonly property real barFontSize: Style.getBarFontSizeForScreen(root.screenName)
     readonly property string fixedFont: Settings.data.ui.fontFixed
 
+    // Special fan level identifiers as reported by /proc/acpi/ibm/fan
+    readonly property string levelAuto: "auto"
+    readonly property string levelOff: "0"
+    readonly property string levelUnknown: "unknown"
+
+    // procfs/sysfs don't emit inotify events — values must be polled
+    readonly property int pollIntervalMs: 2000
+    readonly property int refreshDelayMs: 300
+
     property int fanRpm: 0
-    property string fanLevel: "auto"
+    property string fanLevel: levelAuto
     property int currentTemp: 0
     property bool isInitialized: false
 
@@ -38,6 +47,18 @@ Item {
         pluginApi?.pluginSettings?.allowPopupOpening ??
         pluginApi?.manifest?.metadata?.defaultSettings?.allowPopupOpening ??
         true
+
+    // Color used when the fan is off (Level 0)
+    readonly property string colorLevel0:
+        pluginApi?.pluginSettings?.colorLevel0 ??
+        pluginApi?.manifest?.metadata?.defaultSettings?.colorLevel0 ??
+        Color.mError
+
+    // Color used when the fan runs at a forced speed (any mode except auto/off)
+    readonly property string colorActive:
+        pluginApi?.pluginSettings?.colorActive ??
+        pluginApi?.manifest?.metadata?.defaultSettings?.colorActive ??
+        Color.mPrimary
 
     readonly property real contentWidth: layout.implicitWidth + Style.marginS * 2
     readonly property real contentHeight: capsuleHeight
@@ -62,7 +83,7 @@ Item {
             if (content) {
                 let lines = content.split("\n");
                 let parsedRpm = 0;
-                let parsedLevel = "auto";
+                let parsedLevel = root.levelAuto;
 
                 for (let i = 0; i < lines.length; i++) {
                     let line = lines[i].trim();
@@ -112,7 +133,7 @@ Item {
         }
 
         let cleanLevel = String(targetLevel).replace(/[\r\n\t]/g, "").trim().toLowerCase();
-        if (!cleanLevel || cleanLevel === "unknown") {
+        if (!cleanLevel || cleanLevel === root.levelUnknown) {
             return;
         }
 
@@ -122,11 +143,10 @@ Item {
         fanProcess.running = true;
     }
 
-    Timer { id: refreshTimer; interval: 300; repeat: false; onTriggered: { fanLoader.reload(); tempLoader.reload(); } }
-    // procfs/sysfs don't emit inotify events — polling is required for live values
-    Timer { interval: 2000; running: true; repeat: true; triggeredOnStart: true; onTriggered: { fanLoader.reload(); tempLoader.reload(); } }
+    Timer { id: refreshTimer; interval: root.refreshDelayMs; repeat: false; onTriggered: { fanLoader.reload(); tempLoader.reload(); } }
+    Timer { interval: root.pollIntervalMs; running: true; repeat: true; triggeredOnStart: true; onTriggered: { fanLoader.reload(); tempLoader.reload(); } }
 
-    readonly property bool isCustomActive: root.fanLevel !== "auto" && root.fanLevel !== "0"
+    readonly property bool isCustomActive: root.fanLevel !== root.levelAuto && root.fanLevel !== root.levelOff
 
     // ===== NATIVE NOCTALIA CONTEXT MENU =====
     NPopupContextMenu {
@@ -134,7 +154,7 @@ Item {
 
         model: [
             {
-                "label": "Widget Settings",
+                "label": pluginApi?.tr("menu.widget-settings"),
                 "action": "settings",
                 "icon": "settings"
             }
@@ -163,14 +183,14 @@ Item {
         color: !root.colorizeByStatus
             ? Style.capsuleColor
             : (root.isCustomActive
-                ? Color.mPrimary
-                : (root.fanLevel === "0" ? "#cc241d" : Style.capsuleColor))
+                ? root.colorActive
+                : (root.fanLevel === root.levelOff ? root.colorLevel0 : Style.capsuleColor))
 
         border.color: !root.colorizeByStatus
             ? Style.capsuleBorderColor
             : (root.isCustomActive
-                ? Color.mPrimary
-                : (root.fanLevel === "0" ? "#cc241d" : Style.capsuleBorderColor))
+                ? root.colorActive
+                : (root.fanLevel === root.levelOff ? root.colorLevel0 : Style.capsuleBorderColor))
         border.width: Style.capsuleBorderWidth
 
         RowLayout {
@@ -181,7 +201,7 @@ Item {
             NIcon {
                 id: fanIcon
                 icon: "car-fan"
-                color: root.colorizeByStatus && (root.isCustomActive || root.fanLevel === "0") ? Color.mOnPrimary : Color.mOnSurface
+                color: root.colorizeByStatus && (root.isCustomActive || root.fanLevel === root.levelOff) ? Color.mOnPrimary : Color.mOnSurface
             }
 
             NText {
@@ -190,7 +210,7 @@ Item {
                 pointSize: barFontSize
                 font.family: root.fixedFont
                 font.weight: Font.Bold
-                color: root.colorizeByStatus && (root.isCustomActive || root.fanLevel === "0") ? Color.mOnPrimary : Color.mOnSurface
+                color: root.colorizeByStatus && (root.isCustomActive || root.fanLevel === root.levelOff) ? Color.mOnPrimary : Color.mOnSurface
             }
         }
     }

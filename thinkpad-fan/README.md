@@ -7,9 +7,21 @@ A resilient system utility plugin designed for the **Noctalia** desktop shell en
 
 *   **Dynamic Fan Speed Indicator**: Embedded status bar module reporting realtime revolutions per minute (`RPM`) telemetry, updating cycles safely every 2 seconds.
 *   **Thermal Zone Inspector**: Contextual diagnostic popup panel tracking active primary sensor clusters.
-*   **Stateful Micro-Pill Alerts**: Custom visual states that color-shift dynamically based on active overrides:
-    *   Turns **Solid Crimson Red** if safety limits are bypassed by forcing the fans off (`level 0`).
-    *   Shifts to system `mPrimary` palette states when explicit constant numeric thresholds are locked down.
+*   **Stateful Micro-Pill Alerts**: The bar capsule color-shifts based on the current fan mode (when *Dynamic coloring* is enabled):
+    *   **Fan off (`level 0`)**: uses the configurable *Fan off* color (defaults to the theme `mError`).
+    *   **Automatic mode**: stays neutral, matching the rest of the bar.
+    *   **Any forced speed** (levels `1`–`7`, full speed, …): uses the configurable *Fan active* color (defaults to the theme `mPrimary`).
+*   **Configurable Colors**: Both the *Fan off* and *Fan active* colors are pickable from the theme palette in the plugin settings.
+
+## Settings
+--------
+
+Open the plugin settings (right-click the widget → **Widget Settings**) to configure:
+
+*   **Dynamic coloring**: toggle the mode-based capsule coloring on/off. When off, the capsule keeps the default bar color.
+    *   **Fan off color**: palette color used when the fan is stopped (`level 0`).
+    *   **Fan active color**: palette color used whenever the fan runs at a forced speed (every mode except automatic and off).
+*   **Fan speed manual override**: when enabled, left-clicking the widget opens the manual fan control panel.
 
 ## Prerequisites
 -------------

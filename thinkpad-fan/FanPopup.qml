@@ -93,7 +93,11 @@ Item {
             anchors.fill: parent
             radius: Style.radiusS
             color: parent.isSelected
-                ? (parent.level === "0" ? "#cc241d" : Color.mPrimary)
+                ? (parent.level === (root.mainWidget?.levelOff ?? "0")
+                    ? (root.mainWidget?.colorLevel0 ?? Color.mError)
+                    : (parent.level === (root.mainWidget?.levelAuto ?? "auto")
+                        ? Style.capsuleColor
+                        : (root.mainWidget?.colorActive ?? Color.mPrimary)))
                 : Color.mSurface
             opacity: parent.isSelected ? 1.0 : (parent.containsMouse ? 0.85 : 0.5)
         }
@@ -103,7 +107,7 @@ Item {
             text: parent.text
             font.weight: parent.isSelected ? Font.Bold : Font.Normal
             pointSize: Style.fontSizeS
-            color: parent.isSelected ? Color.mOnPrimary : Color.mOnSurface
+            color: (parent.isSelected && parent.level !== (root.mainWidget?.levelAuto ?? "auto")) ? Color.mOnPrimary : Color.mOnSurface
         }
     }
 }
